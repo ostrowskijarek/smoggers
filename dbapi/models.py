@@ -4,8 +4,8 @@ from django.db import models
 class GeoPoint(models.Model):
     description = models.CharField(max_length=200)
     timestamp = models.DateTimeField()
-    #latitude - double in django?
-    #longitude - double in django?
+    latitude = models.DecimalField(max_digits=7, decimal_places=5)
+    longitude = models.DecimalField(max_digits=8, decimal_places=5)
     author = models.CharField(max_length=200)
     votes_up = models.IntegerField(default=0)
     votes_down = models.IntegerField(default=0)

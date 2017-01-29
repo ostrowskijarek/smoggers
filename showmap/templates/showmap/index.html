@@ -11,7 +11,9 @@
 
   <link rel="stylesheet" href="{% static 'showmap/assets/leaflet.css' %}">
   <script src="{% static 'showmap/assets/leaflet.js' %}"></script>
+
   <script src="{% static 'showmap/assets/jquery-3.1.1.min.js' %}"></script>
+    <script src="{% static 'showmap/assets/js.cookie.js' %}"></script>
 
   <!-- Load geocoding plugin after Leaflet -->
   <link rel="stylesheet" href="{% static 'showmap/assets/leaflet-geocoder-mapzen.css' %}">
@@ -31,9 +33,42 @@
       bounds: true
     }
     var geocoder = L.control.geocoder('search-MKZrG6M', options).addTo(map);
+	var csrftoken = Cookies.get('csrftoken');
+	function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+	
+	
+	function onMapClick(e) {
+		var data_send = new Object();
+		data_send.lat=String(e.latlng.lat);
+		data_send.lng=String(e.latlng.lng);
+	    $.ajax({
+		 beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+           }
+        },
+        url: 'http://127.0.0.1:8000/dbapi/set_point/',
+        type: 'POST',
+        data: data_send,
+        traditional: true,
+        dataType: 'json',
+        success: function(result){
+            console.log("log test"+result);
+            },
+		failure: function(result){
+            console.log("log test"+result);
+            }
+        
+    });       
+	}  
+
+	map.on('click', onMapClick);
 	
 	$.ajax({
-    url: 'http://127.0.0.1:8000/dbapi/',
+    url: 'http://127.0.0.1:8000/dbapi/get_points/',
     type: 'get', 
     success: function(data) {
             $.each(data, function (key) {

@@ -1,20 +1,22 @@
 # import it
 from django.http import JsonResponse
+from .models import GeoPoint
+from django.utils import timezone
+
 
 def get_points(request):
-    data =  {"points" : [{\
-	"id" : 1, \
-	"coordinates":{ \
-	"latitude":"51.17145", \
-	"longitude":"17.19718"}},	\
-	{"id" : 2, \
-	"coordinates":{ \
-	"latitude":"51.1823", \
-	"longitude":"17.1827"}},	\
-	{"id" : 3, \
-	"coordinates":{ \
-	"latitude":"51.2213", \
-	"longitude":"17.1227"}}]}	\
-
+    objs = GeoPoint.objects.all()
+    data = {}
+    data["points"]=[]
+    for obj in objs:
+        point={"coordinates" : {"latitude" : str(obj.latitude), "longitude" : str(obj.longitude)}, "id" : obj.pk}
+        data["points"].append(point)
     return JsonResponse(data)
-	
+
+def set_point(request):
+    longitude =request.POST["lng"]
+    latitude = request.POST["lat"]
+    gp = GeoPoint(description="dummy description", timestamp=timezone.now(), latitude = latitude, longitude=longitude, author="dummy author" )
+    gp.save()
+    data={"ok":"ok"}
+    return JsonResponse(data)
