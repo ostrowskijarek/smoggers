@@ -50,7 +50,7 @@
                 xhr.setRequestHeader("X-CSRFToken", csrftoken);
            }
         },
-        url: 'http://127.0.0.1:8000/dbapi/set_point/',
+        url: '/dbapi/set_point/',
         type: 'POST',
         data: data_send,
         traditional: true,
@@ -68,7 +68,7 @@
 	map.on('click', onMapClick);
 	
 	$.ajax({
-    url: 'http://127.0.0.1:8000/dbapi/get_points/',
+    url: '/dbapi/get_points/',
     type: 'get', 
     success: function(data) {
             $.each(data, function (key) {
