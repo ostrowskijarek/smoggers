@@ -1,8 +1,8 @@
-# import it
 from django.http import JsonResponse
 from .models import GeoPoint
 from django.utils import timezone
-
+from django.views.decorators.csrf import ensure_csrf_cookie
+@ensure_csrf_cookie
 
 def get_points(request):
     objs = GeoPoint.objects.all()
@@ -18,5 +18,5 @@ def set_point(request):
     latitude = request.POST["lat"]
     gp = GeoPoint(description="dummy description", timestamp=timezone.now(), latitude = latitude, longitude=longitude, author="dummy author" )
     gp.save()
-    data={"ok":"ok"}
+    data={"id":gp.id}
     return JsonResponse(data)

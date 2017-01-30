@@ -56,16 +56,19 @@
         traditional: true,
         dataType: 'json',
         success: function(result){
-            console.log("log test"+result);
+		    console.log("id: "+result.id);
+            L.marker([data_send.lat, data_send.lng]).addTo(map).bindPopup("id: " +result.id +"</br>latitude: " +data_send.lat +" </br>longitude: " +data_send.lng)
             },
 		failure: function(result){
-            console.log("log test"+result);
+            console.log("log failure"+result);
             }
         
     });       
 	}  
 
-	map.on('click', onMapClick);
+	map.on('dblclick', onMapClick);
+	map.doubleClickZoom.disable(); 
+
 	
 	$.ajax({
     url: '/dbapi/get_points/',
