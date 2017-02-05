@@ -9,6 +9,7 @@ class GeoPoint(models.Model):
     author = models.CharField(max_length=200)
     votes_up = models.IntegerField(default=0)
     votes_down = models.IntegerField(default=0)
+    counter=1
 
 
 class Comment(models.Model):

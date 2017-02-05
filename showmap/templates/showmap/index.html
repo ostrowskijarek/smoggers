@@ -10,7 +10,11 @@
   <!-- Load Leaflet from CDN -->
 
   <link rel="stylesheet" href="{% static 'showmap/assets/leaflet.css' %}">
+  <link rel="stylesheet" href="{% static 'showmap/assets/smoggers.css' %}">
+
+  
   <script src="{% static 'showmap/assets/leaflet.js' %}"></script>
+  
 
   <script src="{% static 'showmap/assets/jquery-3.1.1.min.js' %}"></script>
     <script src="{% static 'showmap/assets/js.cookie.js' %}"></script>
@@ -40,7 +44,7 @@
 }
 	
 	
-	function onMapClick(e) {
+	function onMapDoubleClick(e) {
 		var data_send = new Object();
 		data_send.lat=String(e.latlng.lat);
 		data_send.lng=String(e.latlng.lng);
@@ -66,10 +70,10 @@
     });       
 	}  
 
-	map.on('dblclick', onMapClick);
+	map.on('dblclick', onMapDoubleClick);
 	map.doubleClickZoom.disable(); 
 
-	
+	function loadPoints() {
 	$.ajax({
     url: '/dbapi/get_points/',
     type: 'get', 
@@ -80,7 +84,9 @@
 					latitude = item.coordinates.latitude;
 					longitude = item.coordinates.longitude;
 					id = item.id;
-					L.marker([latitude, longitude]).addTo(map).bindPopup("id: " +id +"</br>latitude: " +latitude +" </br>longitude: " +longitude)
+					var single_marker = L.marker([latitude, longitude]).addTo(map).bindPopup("id: " +id +"</br>latitude: " +latitude +" </br>longitude: " +longitude)
+					single_markers_array.push(single_marker)
+					map.addLayer(single_markers_array[local_id]);
 				})
 			
 			})
@@ -91,9 +97,87 @@
         
     }
 }); 
-	
-	
+}
 
+    function loadContainers(pixels, cur_zoom) {
+	var data_send = new Object();
+    data_send.pix_min=String(pixels.min);
+    data_send.pix_max=String(pixels.max);
+    data_send.cur_zoom=String(cur_zoom);
+        $.ajax({
+		    beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+				}
+            },
+            url: '/dbapi/get_containers/',
+
+            type: 'POST',
+            data: data_send,
+            traditional: true,
+            dataType: 'json',
+            success: function(data) {
+			radius = data.radius
+            $.each(data, function (key) {
+			    $.each(data[key], function (local_id,item) {
+				    //local_id diffrent to the one in the json
+					latitude = item.coordinates.latitude;
+					longitude = item.coordinates.longitude;
+					counter = item.counter;
+					id = item.id;
+					var circle = L.circle([latitude, longitude], {
+					color: 'red',
+					fillColor: '#f03',
+					fillOpacity: 0.5,
+					radius: radius
+					})
+					circle_array.push(circle)
+					map.addLayer(circle_array[local_id]);
+					var divIcon = L.divIcon({ 
+ 					html: counter,
+					className: "counterLabelClass",
+					})
+					var marker = L.marker(new L.LatLng(latitude, longitude), {icon: divIcon })
+					markers_array.push(marker)
+					map.addLayer(markers_array[local_id]);
+				})
+			
+			})
+       		
+	  
+    },
+    failure: function(data) { 
+        
+    }
+}); 
+}
+var circle_array = new Array();
+var markers_array = new Array();
+var single_markers_array = new Array();
+
+
+map.on('zoomend', function() {
+    for(i=0;i<circle_array.length;i++) {
+    map.removeLayer(circle_array[i]);
+    }  
+    for(i=0;i<markers_array.length;i++) {
+    map.removeLayer(markers_array[i]);
+    }  
+    for(i=0;i<single_markers_array.length;i++) {
+    map.removeLayer(single_markers_array[i]);
+    }  
+    var pixels = map.getPixelBounds();
+    var cur_zoom = map.getZoom()
+    circle_array = []
+    markers_array = []
+    single_markers_array = []
+    if (cur_zoom > 14) {
+       loadPoints()
+    } else {
+       loadContainers(pixels, cur_zoom);
+    }
+    
+});
 	
   </script>
 </body>
