@@ -60,8 +60,7 @@
         traditional: true,
         dataType: 'json',
         success: function(result){
-		    console.log("id: "+result.id);
-            L.marker([data_send.lat, data_send.lng]).addTo(map).bindPopup("id: " +result.id +"</br>latitude: " +data_send.lat +" </br>longitude: " +data_send.lng)
+               loadAllPoints();
             },
 		failure: function(result){
             console.log("log failure"+result);
@@ -160,8 +159,7 @@ $( document ).ready(function() {
     var cur_zoom = map.getZoom()
     loadContainers(pixels, cur_zoom);
 });
-
-map.on('zoomend', function() {
+function loadAllPoints() {
     for(i=0;i<circle_array.length;i++) {
     map.removeLayer(circle_array[i]);
     }  
@@ -181,8 +179,8 @@ map.on('zoomend', function() {
     } else {
        loadContainers(pixels, cur_zoom);
     }
-    
-});
+}
+map.on('zoomend', loadAllPoints);
 
 	
   </script>
