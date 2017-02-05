@@ -117,32 +117,32 @@
             traditional: true,
             dataType: 'json',
             success: function(data) {
-			radius = data.radius
-            $.each(data, function (key) {
-			    $.each(data[key], function (local_id,item) {
+				radius = data.radius;
+
+					$.each(data['points'], function (local_id,item) {
 				    //local_id diffrent to the one in the json
-					latitude = item.coordinates.latitude;
-					longitude = item.coordinates.longitude;
-					counter = item.counter;
-					id = item.id;
-					var circle = L.circle([latitude, longitude], {
-					color: 'red',
-					fillColor: '#f03',
-					fillOpacity: 0.5,
-					radius: radius
-					})
-					circle_array.push(circle)
-					map.addLayer(circle_array[local_id]);
-					var divIcon = L.divIcon({ 
- 					html: counter,
-					className: "counterLabelClass",
-					})
-					var marker = L.marker(new L.LatLng(latitude, longitude), {icon: divIcon })
-					markers_array.push(marker)
-					map.addLayer(markers_array[local_id]);
+						latitude = item.coordinates.latitude;
+						longitude = item.coordinates.longitude;
+						counter = item.counter;
+						id = item.id;
+						var circle = L.circle([latitude, longitude], {
+						color: 'red',
+						fillColor: '#f03',
+						fillOpacity: 0.5,
+						radius: radius,
+						})
+						circle_array.push(circle)
+						map.addLayer(circle_array[local_id]);
+						var divIcon = L.divIcon({ 
+						html: counter,
+						className: "counterLabelClass",
+						})
+						var marker = L.marker(new L.LatLng(latitude, longitude), {icon: divIcon })
+						markers_array.push(marker)
+						map.addLayer(markers_array[local_id]);
 				})
 			
-			})
+
        		
 	  
     },

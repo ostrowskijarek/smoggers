@@ -24,7 +24,6 @@ def get_containers(request):
    
     objs = GeoPoint.objects.all()
     radius = int(300 * (1+ ((14-cur_zoom)) * ((14-cur_zoom)) * ((14-cur_zoom))))
-    print(radius)
     data["radius"]=radius
     centers=[]
     taken_list=[]
