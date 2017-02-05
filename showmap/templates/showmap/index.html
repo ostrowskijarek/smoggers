@@ -155,6 +155,11 @@ var circle_array = new Array();
 var markers_array = new Array();
 var single_markers_array = new Array();
 
+$( document ).ready(function() {
+    var pixels = map.getPixelBounds();
+    var cur_zoom = map.getZoom()
+    loadContainers(pixels, cur_zoom);
+});
 
 map.on('zoomend', function() {
     for(i=0;i<circle_array.length;i++) {
@@ -178,6 +183,7 @@ map.on('zoomend', function() {
     }
     
 });
+
 	
   </script>
 </body>
